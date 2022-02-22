@@ -19,7 +19,7 @@ const Form = ({ data }) => {
     const currencyList = data.reduce((acc, currency) => {
         acc.push(currency.ccy)
         return acc
-    },[])
+    },["UAH"])
     return currencyList;
 }, [data]);
 
@@ -32,12 +32,21 @@ const Form = ({ data }) => {
   };
 
   const handleChangeAmount = (event) => {
-    if (parseInt(event.target.value) < 0){
-        setError({ message: 'Введіть валідне значення', error: true });
-    } else {
-        setError({ message: '', error: false });
-    }  
-    setAmount(event.target.value)
+	 const regexp = /(\d+) (\w{3}) in (\w{3})/; 
+	 if (event.target.value.length>0){
+		const amountParset = event.target.value.toLowerCase().match(regexp);
+		console.log(amountParset[1])
+		if (amountParset.length>0){
+			setAmount(amountParset[1])
+			setError({ message: '', error: false });
+		} else {
+			setError({ message: 'Введіть валідне значення', error: true });
+		}
+
+	 } else {
+		setError({ message: 'Введіть валідне значення', error: true });
+	 }
+
   }
 
   const handleCalculate = () => {
@@ -64,7 +73,7 @@ const Form = ({ data }) => {
         <TextField
           id="standard-number"
           label="Введіть значення"
-          type="number"
+          type="text"
           onChange={handleChangeAmount}
           InputLabelProps={{
             shrink: true,
@@ -73,32 +82,7 @@ const Form = ({ data }) => {
           helperText= {error.message}
           variant="standard"
         />
-        <TextField
-          id="outlined-select-currency"
-          select
-          value={currencyFrom}
-          onChange={handleChangeCurrencyFrom}
-          helperText="Оберіть валюту"
-        >
-          {currencies.map((option) => (
-            <MenuItem key={option} value={option}>
-              {option}
-            </MenuItem>
-          ))}
-        </TextField>
-        <TextField
-          id="outlined-select-currency"
-          select
-          value={currencyTo}
-          onChange={handleChangeCurrencyTo}
-          helperText="Оберіть валюту"
-        >
-          {currencies.map((option) => (
-            <MenuItem key={option} value={option}>
-              {option}
-            </MenuItem>
-          ))}
-        </TextField>
+        
         { currencyValue && currencyValue}
         <Button variant="contained" onClick={ handleCalculate }>Розрахувати</Button>
       </div>

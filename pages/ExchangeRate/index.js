@@ -44,7 +44,6 @@ export async function getServerSideProps() {
   // Fetch data from external API
   const res = await fetch(`https://api.privatbank.ua/p24api/pubinfo?exchange&json&coursid=11`)
   const data = await res.json()
-  console.log(data)
   // Pass data to the page via props
   return { props: { data } }
 }
