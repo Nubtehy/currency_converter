@@ -44,6 +44,7 @@ const Currency = ({ currencies }) => {
 					id="outlined-select-currency"
 					select
 					value={currency}
+					defaultValue="UAH"
 					onChange={handleChangeCurrency}
 					helperText="Ваша валюта"
 				>

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useMemo, useContext } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -6,16 +6,26 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import AppContext from "../../AppContext";
 
 const ExchangeRate = ({ data }) => {
+	const context = useContext(AppContext);
+	const { currency } = context.state;
 
+	const currencies = useMemo(() => {
+		const currencies = data.reduce((acc, value) => {
+			acc[value.ccy] = { buy: value.buy, sale: value.sale }
+			return acc
+		}, { ["UAH"]: { buy: 1, sale: 1 } })
+
+		return currencies;
+	}, [data]);
 	return (
 		<TableContainer component={Paper}>
-			<Table sx={{ maxWidth: 650 }} aria-label="simple table">
+			<Table aria-label="simple table">
 				<TableHead>
 					<TableRow>
 						<TableCell align="right">Код валюти </TableCell>
-						<TableCell align="right">Код національної валюти</TableCell>
 						<TableCell align="right">Курс купівлі</TableCell>
 						<TableCell align="right">Курс продажу</TableCell>
 					</TableRow>
@@ -23,15 +33,14 @@ const ExchangeRate = ({ data }) => {
 				<TableBody>
 					{data.map((row) => (
 						<TableRow
-							key={row.name}
+							key={row.ccy}
 							sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
 						>
 							<TableCell component="th" scope="row">
 								{row.ccy}
 							</TableCell>
-							<TableCell align="right">{row.base_ccy}</TableCell>
-							<TableCell align="right">{row.buy}</TableCell>
-							<TableCell align="right">{row.sale}</TableCell>
+							<TableCell align="right">{row.ccy !== "BTC" ? row.buy / currencies[currency].buy : row.buy * currencies["USD"].buy / currencies[currency].buy}</TableCell>
+							<TableCell align="right">{row.ccy !== "BTC" ? row.sale / currencies[currency].sale : row.sale * currencies["USD"].sale / currencies[currency].sale}</TableCell>
 						</TableRow>
 					))}
 				</TableBody>

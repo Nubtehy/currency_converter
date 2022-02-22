@@ -7,10 +7,15 @@ import Toggle from '../../components/Toggle';
 const CurrencyConverter = ({ data }) => {
 
 	return (
-		<Box >
-			<Toggle />
-			<Form data={data} />
-		</Box>
+		<>
+			<Box sx={{ p: 2, gap: 2 }}>
+				<Toggle />
+			</Box>
+			<Box sx={{ p: 2, gap: 2 }}>
+				<Form data={data} />
+			</Box>
+		</>
+
 	);
 }
 
