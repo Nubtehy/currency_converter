@@ -7,7 +7,6 @@ const Toggle = () => {
 	const context = useContext(AppContext);
 
 	const { operation } = context.state;
-	const { setОperation } = context;
 
 
 	const handleChange = (event, value) => {

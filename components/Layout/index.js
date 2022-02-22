@@ -1,25 +1,21 @@
 import { useState } from 'react';
 
 import Container from '@mui/material/Container';
-import Stack from '@mui/material/Stack';
-import Grid from '@mui/material/Grid';
-
-import { Navigation } from '../../components/Navigation'
+import Navigation from '../../components/Navigation'
 import Currency from '../../components/Currency';
 import AppContext from "../../AppContext";
 
-
-export const Layout = (props) => {
+const Layout = (props) => {
 	const [operation, setОperation] = useState("buy");
-	const [currency, setCurrency] = useState("UAH");
+	const [userCurrency, setUserCurrency] = useState("UAH");
 	return (
 		<AppContext.Provider value={{
 			state: {
 				operation: operation,
-				currency: currency
+				userCurrency: userCurrency
 			},
 			setОperation: setОperation,
-			setCurrency: setCurrency,
+			setUserCurrency: setUserCurrency,
 		}}>
 			<Container maxWidth="sm">
 				<header>

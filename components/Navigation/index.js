@@ -2,11 +2,10 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import CalculateIcon from '@mui/icons-material/Calculate';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
-import { NavigationLink } from '../../elements/NavigationLink';
+import NavigationLink from '../../elements/NavigationLink';
 
 
-export const Navigation = () => {
-
+const Navigation = () => {
 	return (
 		<Box sx={{ '& button': { m: 1 } }}>
 			<NavigationLink
@@ -24,3 +23,4 @@ export const Navigation = () => {
 		</Box>
 	);
 }
+export default Navigation

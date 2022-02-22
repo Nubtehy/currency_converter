@@ -2,7 +2,6 @@ import { useMemo, useState, useContext, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
-import Button from '@mui/material/MenuItem';
 import AppContext from "../../AppContext";
 
 const fetchCurrrency = async (setCurrenciesList) => {
@@ -15,20 +14,21 @@ const fetchCurrrency = async (setCurrenciesList) => {
 	setCurrenciesList(currencyList)
 }
 
-const Currency = ({ currencies }) => {
+const Currency = () => {
 	const context = useContext(AppContext);
 	const [currenciesList, setCurrenciesList] = useState(['UAH']);
-	const { currency } = context.state;
-	const { setCurrency } = context;
+	const { userCurrency } = context.state;
+	const { setUserCurrency } = context;
 
 
 	const handleChangeCurrency = (event) => {
-		setCurrency(event.target.value);
+		setUserCurrency(event.target.value);
 	};
-	useEffect(() => {
 
+	useEffect(() => {
 		fetchCurrrency(setCurrenciesList)
 	}, [])
+
 	return (
 		<Box
 			component="form"
@@ -43,7 +43,7 @@ const Currency = ({ currencies }) => {
 				<TextField
 					id="outlined-select-currency"
 					select
-					value={currency}
+					value={userCurrency}
 					defaultValue="UAH"
 					onChange={handleChangeCurrency}
 					helperText="Ваша валюта"

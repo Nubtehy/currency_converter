@@ -4,6 +4,8 @@ import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import AppContext from "../../AppContext";
+import { currenciesListFormatter, currencyFormatter } from "../../utils/helper"
+
 
 const Form = ({ data }) => {
 	const context = useContext(AppContext);
@@ -12,56 +14,52 @@ const Form = ({ data }) => {
 	const [currencyFrom, setCurrencyFrom] = useState('');
 	const [currencyTo, setCurrencyTo] = useState('');
 	const [amount, setAmount] = useState('');
-	const [error, setError] = useState({ message: '', error: false });
+	const [error, setError] = useState('');
 	const [result, setResult] = useState(0);
 	const [inputValue, setInputValue] = useState("");
 
 	const currencies = useMemo(() => {
-		const currencyList = data.reduce((acc, currency) => {
-			acc[currency.ccy] = { buy: currency.buy, sale: currency.sale }
-			return acc
-		}, { ["UAH"]: { buy: 1, sale: 1 } })
-		return currencyList;
+		return currenciesListFormatter(data)
 	}, [data]);
 
-	const handleChangeCurrencyFrom = (event) => {
-		setCurrencyFrom(event.target.value);
-	};
-
-	const handleChangeCurrencyTo = (event) => {
-		setCurrencyTo(event.target.value);
-	};
-
 	const handleChangeAmount = (event) => {
-		const regexp = /(\d+) (\w{3}) in (\w{3})/;
-		setInputValue(event.target.value)
-		if (event.target.value.length > 0) {
-			const amountParset = event.target.value.toLowerCase().match(regexp);
+		const regexp = /^(\d+(\.\d+)?) (\w{3}) in (\w{3})$/;
+		setInputValue(event.target.value);
 
-			if (amountParset && amountParset.length > 0) {
-				setAmount(amountParset[1])
-				setCurrencyFrom(amountParset[2].toLocaleUpperCase())
-				setCurrencyTo(amountParset[3].toLocaleUpperCase())
-				setError({ message: '', error: false });
+		if (event.target.value.length > 0) {
+
+			const amountParsed = event.target.value.toLowerCase().trim().match(regexp);
+
+			if (amountParsed && amountParsed.length > 0) {
+				const currencyFrom = amountParsed[3].toLocaleUpperCase();
+				const currencyTo = amountParsed[4].toLocaleUpperCase();
+				if (currencies[currencyFrom] && currencies[currencyTo]) {
+					setAmount(amountParsed[1])
+					setCurrencyFrom(currencyFrom)
+					setCurrencyTo(currencyTo)
+					setError("")
+				}
 			} else {
-				setError({ message: 'Введіть валідне значення', error: true });
+				handleError("Введіть валідне значення");
 			}
 
 		} else {
-			setError({ message: 'Введіть валідне значення', error: true });
+			handleError("Введіть валідне значення");
 		}
-
 	}
 
 	const handleCalculate = () => {
-		if (currencyFrom === currencyTo) {
-			setResult(amount)
+		if (currencyFrom && currencyTo) {
+			const result = currencies[currencyFrom][operation] / currencies[currencyTo][operation] * amount;
+			setResult(result);
 		} else {
-			const result = currencies[currencyFrom][operation] / currencies[currencyTo][operation] * amount
-
-			setResult(result)
+			handleError("Введіть значення");
 		}
+	}
 
+	const handleError = (error) => {
+		setError(error);
+		setAmount(0);
 	}
 
 	return (
@@ -82,8 +80,9 @@ const Form = ({ data }) => {
 							shrink: true,
 						}}
 						value={inputValue}
-						error={error.error}
-						helperText={error.message}
+						placeholder='15 usd in uah'
+						error={!!error}
+						helperText={error}
 					/>
 				</Grid>
 				<Grid item xs={6} >

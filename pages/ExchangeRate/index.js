@@ -7,20 +7,19 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import AppContext from "../../AppContext";
+import { currenciesListFormatter, currencyFormatter } from "../../utils/helper"
+
+
 
 const ExchangeRate = ({ data }) => {
 	const context = useContext(AppContext);
-	const { currency } = context.state;
+	const { userCurrency } = context.state;
 
-	const currencies = useMemo(() => {
-		const currencies = data.reduce((acc, value) => {
-			acc[value.ccy] = { buy: value.buy, sale: value.sale }
-			return acc
-		}, { ["UAH"]: { buy: 1, sale: 1 } })
+	const currencyList = useMemo(() => {
+		return currenciesListFormatter(data)
+	},[data])
 
-		return currencies;
-	}, [data]);
-	return (
+	return true ? (
 		<TableContainer component={Paper}>
 			<Table aria-label="simple table">
 				<TableHead>
@@ -31,22 +30,24 @@ const ExchangeRate = ({ data }) => {
 					</TableRow>
 				</TableHead>
 				<TableBody>
-					{data.map((row) => (
-						<TableRow
-							key={row.ccy}
-							sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-						>
-							<TableCell component="th" scope="row">
-								{row.ccy}
-							</TableCell>
-							<TableCell align="right">{row.ccy !== "BTC" ? row.buy / currencies[currency].buy : row.buy * currencies["USD"].buy / currencies[currency].buy}</TableCell>
-							<TableCell align="right">{row.ccy !== "BTC" ? row.sale / currencies[currency].sale : row.sale * currencies["USD"].sale / currencies[currency].sale}</TableCell>
-						</TableRow>
-					))}
+					{
+						Object.keys(currencyList).map(function (key, index) {
+
+							return <TableRow
+								key={key}
+								sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+							>
+								<TableCell component="th" scope="row">
+									{key}
+								</TableCell>
+								<TableCell align="right">{currencyFormatter(currencyList[key].buy / currencyList[userCurrency].buy, userCurrency)}</TableCell>
+								<TableCell align="right">{currencyFormatter(currencyList[key].sale / currencyList[userCurrency].sale, userCurrency)}</TableCell>
+							</TableRow>
+						})
+					}
 				</TableBody>
 			</Table>
-		</TableContainer>
-	);
+		</TableContainer>) : (<div>Щось пішло не так :(</div>)
 }
 
 export async function getServerSideProps() {
